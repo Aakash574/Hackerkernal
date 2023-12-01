@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -71,26 +73,27 @@ class _AddProductState extends State<AddProduct> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      addProductDetails(
-                        'Product Name',
-                        FontAwesomeIcons.boxOpen,
-                        'akg n700ncm2 wireless headphones',
-                        _productNameController,
-                        const Color.fromARGB(255, 107, 73, 60),
+                      AddProductDetails(
+                        title: 'Product Name',
+                        priffixIcon: FontAwesomeIcons.boxOpen,
+                        hintText: 'akg n700ncm2 wireless headphones',
+                        controller: _productNameController,
+                        color: const Color.fromARGB(255, 107, 73, 60),
                       ),
-                      addProductDetails(
-                        'Product Price',
-                        FontAwesomeIcons.moneyBill1,
-                        '\$199.00',
-                        _productPriceController,
-                        const Color.fromARGB(255, 17, 134, 79),
+                      AddProductDetails(
+                        title: 'Product Price',
+                        priffixIcon: FontAwesomeIcons.moneyBill1,
+                        hintText: '\$199.00',
+                        controller: _productPriceController,
+                        color: const Color.fromARGB(255, 17, 134, 79),
                       ),
-                      addProductDetails(
-                        'Image Link',
-                        FontAwesomeIcons.link,
-                        'https://helpx.adobe.com/content/dam/help/en/photoshop/using/convert-color-image-black-white/jcr_content/main-pars/before_and_after/image-before/Landscape-Color.jpg',
-                        _productLinkController,
-                        const Color.fromARGB(255, 152, 181, 253),
+                      AddProductDetails(
+                        title: 'Image Link',
+                        priffixIcon: FontAwesomeIcons.link,
+                        hintText:
+                            'https://helpx.adobe.com/content/dam/help/en/photoshop/using/convert-color-image-black-white/jcr_content/main-pars/before_and_after/image-before/Landscape-Color.jpg',
+                        controller: _productLinkController,
+                        color: const Color.fromARGB(255, 152, 181, 253),
                       ),
                       const SizedBox(height: 20),
                       Container(
@@ -180,29 +183,18 @@ class _AddProductState extends State<AddProduct> {
                   alignment: Alignment.bottomCenter,
                   child: GestureDetector(
                     onTap: () {
-                      if (_productNameController.text.isNotEmpty &&
-                          _productPriceController.text.isNotEmpty &&
-                          dropDownValue != 'Select') {
-                        Map<String, dynamic> product = {
-                          'imageLink': _productLinkController.text,
-                          'isAvailable': isAvailable,
-                          'productName': _productNameController.text,
-                          'productPrice':
-                              '\$${_productPriceController.text}.00',
-                          'productType': dropDownValue,
-                        };
-                        productProvider.addProduct(product);
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (builder) => const Dashboard(),
-                          ),
-                          (route) => false,
-                        );
+                      if (productProvider.productList.isNotEmpty) {
+                        for (var product in productProvider.productList) {
+                          if (product['productName'].toLowerCase() ==
+                              _productNameController.text.toLowerCase()) {
+                            Fluttertoast.showToast(
+                                msg: 'Product Already Exist');
+                          } else {
+                            addProduct(productProvider);
+                          }
+                        }
                       } else {
-                        Fluttertoast.showToast(
-                          msg: 'Empty field? please fill all details',
-                        );
+                        addProduct(productProvider);
                       }
                     },
                     child: Container(
@@ -231,20 +223,65 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  Widget addProductDetails(
-    String title,
-    IconData priffixIcon,
-    String hintText,
-    TextEditingController controller,
-    Color color,
-  ) {
+  void addProduct(ProductProvider productProvider) {
+    if (_productNameController.text.isNotEmpty &&
+        _productPriceController.text.isNotEmpty &&
+        dropDownValue != 'Select') {
+      Map<String, dynamic> product = {
+        'imageLink': _productLinkController.text,
+        'isAvailable': isAvailable,
+        'productName': _productNameController.text,
+        'productPrice': '\$${_productPriceController.text}.00',
+        'productType': dropDownValue,
+      };
+
+      productProvider.addProduct(product);
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (builder) => const Dashboard(),
+        ),
+        (route) => false,
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Empty field? please fill all details',
+      );
+    }
+  }
+}
+
+class AddProductDetails extends StatefulWidget {
+  const AddProductDetails({
+    super.key,
+    required this.title,
+    required this.priffixIcon,
+    required this.hintText,
+    required this.controller,
+    required this.color,
+  });
+  final String title;
+  final IconData priffixIcon;
+  final String hintText;
+  final TextEditingController controller;
+  final Color color;
+
+  @override
+  State<AddProductDetails> createState() => _AddProductDetailsState();
+}
+
+class _AddProductDetailsState extends State<AddProductDetails> {
+  String? _errorText;
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         const SizedBox(height: 5),
         Text(
-          title,
+          widget.title,
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -261,15 +298,18 @@ class _AddProductState extends State<AddProduct> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               FaIcon(
-                priffixIcon,
-                color: color,
+                widget.priffixIcon,
+                color: widget.color,
               ),
               const SizedBox(width: 15),
               Expanded(
-                child: TextField(
-                  controller: controller,
+                child: TextFormField(
+                  controller: widget.controller,
+                  keyboardType: widget.title == 'Product Price'
+                      ? TextInputType.number
+                      : TextInputType.text,
                   decoration: InputDecoration(
-                    hintText: 'Eg. $hintText',
+                    hintText: 'Eg. ${widget.hintText}',
                     hintStyle: const TextStyle(
                       color: Color.fromARGB(255, 165, 165, 165),
                     ),

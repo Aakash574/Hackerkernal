@@ -27,101 +27,95 @@ class _ProductPageState extends State<ProductPage> {
           child: productProvider.productList.isNotEmpty
               ? GridView.builder(
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: size.width / 2,
+                    maxCrossAxisExtent: size.width / 2.2,
+                    mainAxisExtent: 250,
                   ),
                   itemCount: productProvider.productList.length,
                   itemBuilder: (context, index) {
-                    return SizedBox(
-                      // height: 250,
-                      width: 190,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.only(right: 12),
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                Container(
-                                  height: 95,
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
-                                    color: Colors.grey.shade100,
-                                  ),
-                                  child: Center(
-                                    child: Image.network(
-                                      productProvider.productList[index]
-                                          ['imageLink'],
-                                      errorBuilder: (context, obj, strc) {
-                                        return Center(
-                                          child: Text(
-                                            "Image not found",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  // child: List
+                    return ListTile(
+                      contentPadding: const EdgeInsets.only(right: 12),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              Container(
+                                height: 95,
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  color: Colors.grey.shade100,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 6),
-                                  child: IconButton(
-                                    onPressed: () {
-                                      productProvider.deleteProduct(0);
-                                      setState(() {});
+                                child: Center(
+                                  child: Image.network(
+                                    productProvider.productList[index]
+                                        ['imageLink'],
+                                    errorBuilder: (context, obj, strc) {
+                                      return Center(
+                                        child: Text(
+                                          "Image not found",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
+                                        ),
+                                      );
                                     },
-                                    icon: const FaIcon(
-                                      FontAwesomeIcons.trashCan,
-                                    ),
                                   ),
                                 ),
-                              ],
-                            ),
-                            Text(
-                              productProvider.productList[index]['productName'],
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
+                                // child: List
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: IconButton(
+                                  onPressed: () {
+                                    productProvider.deleteProduct(0);
+                                    setState(() {});
+                                  },
+                                  icon: const FaIcon(
+                                    FontAwesomeIcons.trashCan,
                                   ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              productProvider.productList[index]['isAvailable']
-                                  ? '• Available'
-                                  : '• Not Available',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    color: productProvider.productList[index]
-                                            ['isAvailable']
-                                        ? const Color.fromARGB(
-                                            255, 84, 224, 126)
-                                        : const Color.fromARGB(
-                                            255, 248, 71, 71),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            Text(
-                              productProvider.productList[index]
-                                  ['productPrice'],
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    color: const Color.fromARGB(
-                                        255, 136, 136, 136),
-                                  ),
-                            ),
-                          ],
-                        ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            productProvider.productList[index]['productName'],
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            productProvider.productList[index]['isAvailable']
+                                ? '• Available'
+                                : '• Not Available',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .copyWith(
+                                  color: productProvider.productList[index]
+                                          ['isAvailable']
+                                      ? const Color.fromARGB(255, 84, 224, 126)
+                                      : const Color.fromARGB(255, 248, 71, 71),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          Text(
+                            productProvider.productList[index]['productPrice'],
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .copyWith(
+                                  color:
+                                      const Color.fromARGB(255, 136, 136, 136),
+                                ),
+                          ),
+                        ],
                       ),
                     );
                   },
